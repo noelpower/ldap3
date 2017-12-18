@@ -155,7 +155,7 @@ def _validate_attribute_type(attribute_type):
     if not attribute_type:
         raise LDAPInvalidDnError('attribute type not present')
 
-    if attribute_type == '<GUID':  # patch for AD DirSync
+    if attribute_type == '<GUID' or attribute_type == '<WKGUID':  # patch for AD DirSync
         return True
 
     for c in attribute_type:
@@ -317,7 +317,7 @@ def safe_dn(dn, decompose=False, reverse=False):
     else:
         escaped_dn = ''
 
-    if dn.startswith('<GUID=') and dn.endswith('>'):  # Active Directory allows looking up objects by putting its GUID in a specially-formatted DN (e.g. '<GUID=7b95f0d5-a3ed-486c-919c-077b8c9731f2>')
+    if (dn.startswith('<GUID=') or dn.startswith('<WKGUID=')) and dn.endswith('>'):  # Active Directory allows looking up objects by putting its GUID in a specially-formatted DN (e.g. '<GUID=7b95f0d5-a3ed-486c-919c-077b8c9731f2>')
         escaped_dn = dn
     elif '@' not in dn and '\\' not in dn:  # active directory UPN (User Principal Name) consist of an account, the at sign (@) and a domain, or the domain level logn name domain\username
         for component in parse_dn(dn, escape=True):
